@@ -77,10 +77,12 @@ def run_task(process_num, mode, file_list, output_file):
     #终止文件位置
     end = start + one_process_num
     print("The number of files is %d. "%num)
-    while end<num:
+    while True:
+        if start>=num:
+            break
         pool.apply_async(one_process, args=(file_list[start:end], mode, output_file))
         start = end
-        end = min(end+one_process_num, num-1)
+        end = min(start+one_process_num, num)
     pool.close()
     pool.join()
 
