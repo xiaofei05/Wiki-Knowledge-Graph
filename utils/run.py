@@ -80,7 +80,7 @@ def run_task(process_num, mode, file_list, output_file):
     while end<num:
         pool.apply_async(one_process, args=(file_list[start:end], mode, output_file))
         start = end
-        end = min(end+one_process_num, num)
+        end = min(end+one_process_num, num-1)
     pool.close()
     pool.join()
 
