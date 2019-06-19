@@ -4,3 +4,6 @@
 * 利用WikiExtractor工具将原始的[Wikidump](https://dumps.wikimedia.org/)数据预处理为entity-article形式
 * 提取每个实体在文章中共现的其他实体      
 待做
+
+janus
+https://blog.csdn.net/xd2ss/article/details/83930009#JanusGraph_Server_213
