@@ -13,76 +13,74 @@ from pathlib import Path
 
 
 
-pattern = re.compile(r'<a\b[^>]+\bhref="([^"]*)"[^>]*>(.*?)</a>')
+ahref_patten = re.compile(r'<a\b[^>]+\bhref="([^"]*)"[^>]*>(.*?)</a>')
 
 
-def add_mention(data,mode):
+def add_mention(data, mode):
     wikipedia_prefix="https://"+mode+".wikipedia.org/wiki/"
     new_data = {}
     new_data['mentions'] = {}
-    result = pattern.findall(data['text'])
+    result = ahref_patten.findall(data['text'])
     for pairs in result:
         new_data['mentions'][pairs[1]] = wikipedia_prefix + pairs[0]
     data.update(new_data)
     return data
 
-def one_process(start, end, file_prefix, mode, output_file ):
+def one_process(file_list, mode, output_file):
     """
-
-    :param start: 在该文件夹中处理任务起始的文件号
-    :param end: 在该文件夹中处理任务结束的文件号
-    :param file_prefix: 所处理文件所在文件夹路径
+    :param file_list: 待处理文件
     :param output_file: 输出结果文件路径
-    :param mode:
+    :param mode: 模式
     :return:
     """
     assert mode == "zh" or "en"
-    #写入文件的路径
-    store_location = file_prefix.split("/")[-1]
-    for num in range(start, end):
-        #要读取的文件名
-        file = file_prefix + "/wiki_" + "%02d"%num
+    for file_path in file_list:
         #存储在output路径下的同子路径文件中
-        output_f = output_file + "/" + store_location + "/wiki_" + "%02d"%num
-        #wiki extractor建立文件夹的形式很坑，文件会在text/AA（类似的文件夹）下，如果需要建立一个类似的文件结构，需要预先递归建立文件夹结构
-        if os.path.exists(output_f) is not True:
-            os.makedirs(output_f[:output_f.rindex("/")])
+        output_f = output_file + file_path[file_path.index('/', 2):]
         with open(output_f, 'w+', encoding='utf-8') as fw:
-            with open(file, 'r', encoding='utf-8') as f:
+            with open(file_path, 'r', encoding='utf-8') as f:
                 count=0
                 for line_data in f:
-                    if count%1000==0:
-                        print(file, count)
+                    if count%3000==0:
+                        print(file_path, count)
                     count+=1
                     if mode == "zh":
                         #将line_data转化为一个dict
                         line_data = json.loads(Converter('zh-hans').convert(line_data).strip())
-                        print(line_data)
+                        # print(line_data)
                     else:
                         line_data = json.loads(line_data.strip())
                     new_data = add_mention(line_data, mode)
                     fw.write(json.dumps(new_data, ensure_ascii=False)+'\n')
 
-def run_task(process_num, mode, file_prefix, output_file):
+def run_task(process_num, mode, file_list, output_file):
     """
-
     :param process_num: 多线程数
     :param mode: 处理中文维基数据（zh）还是英文数据（en）
-    :param file_prefix: 处理文件上级目录
+    :param file_list: 待处理文件列表
     :return:
     """
-    #列出file_prefix下的文件个数
-    num=len(os.listdir(file_prefix))
+    #列出file_list下的文件个数
+    num=len(file_list)
+    
+    # 新建文件夹
+    for file_path in file_list:
+        #存储在output路径下的同子路径文件中
+        output_f = output_file + file_path[file_path.index('/', 2):]
+        if not os.path.exists(output_f[:output_f.rindex("/")]):
+            os.makedirs(output_f[:output_f.rindex("/")])
+    
     pool = multiprocessing.Pool(processes = process_num)
     one_process_num = (int)(math.ceil(num*1.0 / process_num))
     #起始文件位置
     start = 0
     #终止文件位置
     end = start + one_process_num
-    while end<=num:
-        pool.apply_async(one_process, args=(start, end, file_prefix, mode, output_file))
+    print("The number of files is %d. "%num)
+    while end<num:
+        pool.apply_async(one_process, args=(file_list[start:end], mode, output_file))
         start = end
-        end = min(end+one_process_num, num+1)
+        end = min(end+one_process_num, num)
     pool.close()
     pool.join()
 
@@ -92,10 +90,10 @@ if __name__ == "__main__":
     parser.add_argument("-n","--need_extractor",help="need running WikiExtractor or not",
                         action="store_true")
     parser.add_argument("--input_file", type=str,
-                        default="../data/pure_article_data/zhwikidata",
+                        default="./en_output",
                         help="pure article data upper folder where the text file is")
     parser.add_argument("--output_file", type=str,
-                        default="../data/pure_article_data/analyzed_zhwikidata",
+                        default="./en_output_analyzed",
                        help="Analyzed data upper folder")
     parser.add_argument("--process_num", type=int, default=8, help="multiprocessnum")
     args = parser.parse_args()
@@ -105,9 +103,13 @@ if __name__ == "__main__":
         mode="zh"
     else:
         mode="en"
-    #获取text文件夹下的所有子文件夹
-    files = os.listdir(args.input_file)
-    for file in files:
-        #加上AA文件夹后的prefix
-        file_prefix = args.input_file+"/"+file
-        run_task(args.process_num,mode,file_prefix,args.output_file)
+    
+    #获取text文件夹下的所有子文件夹的文件
+    file_list = []
+    for root, dirs, files in os.walk(args.input_file):
+        if len(files)==0:
+            continue
+        else:
+            for file in files:
+                file_list.append(root+'/'+file)
+    run_task(args.process_num, mode, file_list, args.output_file)
