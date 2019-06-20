@@ -1,5 +1,7 @@
 
 utils模块的作用是对wikiextractor的结果进行处理：全部替换为简体字，并获取每篇text中的mention及其链接。  
+
+## wiki extractor
 首先，我们使用Wiki extractor对wikidump数据进行抽取。wikiextractor位于`utils`文件夹下。
 
 有关Wiki extractor的详情请参考链接[Wiki extractor](https://github.com/attardi/wikiextractor)
@@ -25,7 +27,9 @@ python WikiExtractor.py $INPUT \
        --filter_disambig_pages
 
 ```
-我们在运行run.py脚本前，使用Wiki extractor对Wikidump数据进行了处理。
+
+## Get mentions
+我们在运行get_mentions.py脚本前，使用Wiki extractor对Wikidump数据进行了处理。
 运行命令如下：
 ```shell
 cd wikiextractor
@@ -38,6 +42,13 @@ pure_article_data/enwikidata
 在使用extractor进行抽取后，文件应该放置在`data/pure_article_data`文件夹下`的zhwikidata`和`enwikidata`中。
 我们对数据进行下一步预处理，将中文维基中的繁体字转换为简体字，然后对每个实体页面中出现的其他实体进行统计。最终的文件存储至`data/pure_article_data`下的`analyzed_zhwikidata和analyzed_enwikidata`中。
 ```python
-python run.py --input_file ../data/pure_article_data/zhwikidata --output_file  ../data/pure_article_data/analyzed_zhwikidata
-python run.py --input_file ../data/pure_article_data/enwikidata --output_file ../data/pure_article_data/analyzed_enwikidata
+python get_mentions.py --input_file ../data/pure_article_data/zhwikidata --output_file  ../data/pure_article_data/analyzed_zhwikidata
+python get_mentions.py --input_file ../data/pure_article_data/enwikidata --output_file ../data/pure_article_data/analyzed_enwikidata
+```
+
+## Filter zhwiki and enwiki
+wikidata的实体文件，压缩文件约36G，解压后约735G，[JSON链接](https://dumps.wikimedia.org/wikidatawiki/entities/)，[数据格式](https://www.mediawiki.org/wiki/Wikibase/DataModel/JSON)。
+对下载后的文件进行处理，保留包含zhwiki或enwiki的实体，保存到output文件夹中。
+```
+python filter_en_zh.py --input latest-all.json --output output
 ```
