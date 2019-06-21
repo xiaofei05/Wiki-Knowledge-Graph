@@ -52,3 +52,8 @@ wikidata的实体文件，压缩文件约36G，解压后约735G，[JSON链接](h
 ```
 python filter_en_zh.py --input latest-all.json --output output
 ```
+## Get Vertex and Edge json file
+将上一步的输出文件，处理成给定格式的文件。
+```
+python gen_v_e.py --input output --output veoutput
+```
