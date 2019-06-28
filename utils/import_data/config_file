@@ -1,0 +1,3 @@
+janusgraph=10.110.165.244
+janusgraph_port=8182
+janusgraph_yaml_file_pos=/home/vcp/local/janusgraph/conf/remote.yaml

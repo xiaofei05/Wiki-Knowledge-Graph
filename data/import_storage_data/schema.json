@@ -1,0 +1,69 @@
+/*
+字段说明：
+vertex_labels：节点标签
+edge_labels：边标签
+property_keys：属性键
+vertexIndexes：节点索引
+edgeIndexes：边索引
+vertexCentricIndexes：节点中心索引
+*/
+
+{
+	"vertex_labels":[
+		{
+			"name":"Entity",
+			"partition": false,
+			"userStatic": false
+		},{
+
+		}
+	],
+	"edge_labels":[
+		{
+			"name":"Relation",
+			"multiplicity": "MULTI",
+			"signatures": null,
+			"undirected": false
+		},{
+
+		}
+	],
+	"property_keys":[
+		{
+			"name":"entity_id",
+			"dataType":"String",
+			"cardinality":"SINGLE"
+		},{
+			"name":"relation_id",
+			"dataType":"String",
+			"cardinality":"SINGLE"
+		}
+	],
+	"vertexIndexes":[
+		{
+			"name": "entity_id_comp",
+			"propertyKeys": ["entity_id"],
+			"composite": true,
+			"unique":false
+		},{
+
+		}
+	],
+	"edgeIndexes":[
+		{
+			"name": "relation_id_comp",
+			"propertyKeys": ["relation_id"],
+			"composite": true,
+			"unique":false
+		},{
+
+		}
+	],
+	"vertexCentricIndexes":[
+		{
+
+		},{
+
+		}
+	]
+}
