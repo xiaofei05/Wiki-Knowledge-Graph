@@ -19,7 +19,7 @@ def process_file(file_path, output_dir):
     global total_count, types, entity_count, relation_count, concept_count, property_count
     with open(file_path, "r") as f:
         for line in f:
-            if total_count%20000==0:
+            if total_count%30000==0:
                 print("\ntotal: %d, ent count: %d, pro count: %d\nrelation count: %d, concept count: %d"%(
                     total_count, entity_count, property_count, relation_count, concept_count))
             total_count+=1
@@ -108,10 +108,11 @@ def process_file(file_path, output_dir):
                                         continue
                                     if obj["datatype"] in ["wikibase-sense", "wikibase-lexeme", "wikibase-form"]:
                                         continue
-                                    edge["abouts"][obj["property"]] = {
+                                    edge["abouts"][obj["property"]] = edge["abouts"].get(obj["property"], [])
+                                    edge["abouts"][obj["property"]].append({
                                         "datatype": obj["datatype"],
                                         "datavalue": obj["datavalue"]
-                                    }
+                                    })
                         
                         if toEntity.get("references", -1) != -1:
                             edge["references"] = {}
@@ -122,10 +123,11 @@ def process_file(file_path, output_dir):
                                             continue
                                         if obj["datatype"] in ["wikibase-sense", "wikibase-lexeme", "wikibase-form"]:
                                             continue
-                                        edge["references"][obj["property"]] = {
+                                        edge["references"][obj["property"]] = edge["references"].get(obj["property"], [])
+                                        edge["references"][obj["property"]].append({
                                             "datatype": obj["datatype"],
                                             "datavalue": obj["datavalue"]
-                                        }
+                                        })
                         
                         # save
                         if flag == "attr":
