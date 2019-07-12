@@ -36,30 +36,26 @@ def process_file(file_path, output_dir):
             
             # descriptions
             if data.get("descriptions", -1)!=-1:
-                entity["descriptions"] = {}
                 for language, value in data["descriptions"].items():
                     if language in ["zh", "en"]:
-                        entity["descriptions"][language] = value["value"]
+                        entity[language + "-description"] = value["value"]
             # labels
             if data.get("labels", -1)!=-1:
-                entity["labels"] = {}
                 for language, value in data["labels"].items():
                     if language in ["zh", "en"]:
-                        entity["labels"][language] = value["value"]
+                        entity[language + "-label"] = value["value"]
             # aliases
             if data.get("aliases", -1)!=-1:
-                entity["aliases"] = {}
                 for language, value in data["aliases"].items():
                     if language in ["zh", "en"]:
-                        entity["aliases"][language] = []
+                        entity[language + "-aliases"] = []
                         for item in data["aliases"][language]:
-                            entity["aliases"][language].append(item["value"])
+                            entity[language + "-aliases"].append(item["value"])
             # sitelinks
             if data.get("sitelinks", -1)!=-1:
-                entity["sitelinks"] = {}
                 for language, value in data["sitelinks"].items():
                     if language in ["zhwiki", "enwiki"] and data["sitelinks"][language]!={}:
-                        entity["sitelinks"][language] = value['title']
+                        entity[language[:2] + "-link"] = value['title']
             
             concept_edge = []
             entity_edge = []
@@ -79,7 +75,7 @@ def process_file(file_path, output_dir):
                         if toEntity["mainsnak"]["datavalue"]["type"] != "wikibase-entityid":
                             edge = {
                                 "datatype": toEntity["mainsnak"]["datatype"],
-                                "datavalues": toEntity["mainsnak"]["datavalue"]
+                                "datavalue": toEntity["mainsnak"]["datavalue"]
                             }
                         else:
                             if toEntity["mainsnak"]["datatype"]=="wikibase-item":
