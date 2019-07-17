@@ -4,13 +4,11 @@
 '''
 import re
 import json
-from langconv import *
 import os
 import multiprocessing
 import math
 import argparse
-from pathlib import Path
-
+import zhconv
 
 
 ahref_patten = re.compile(r'<a\b[^>]+\bhref="([^"]*)"[^>]*>(.*?)</a>')
@@ -46,7 +44,7 @@ def one_process(file_list, mode, output_file):
                     count+=1
                     if mode == "zh":
                         #将line_data转化为一个dict
-                        line_data = json.loads(Converter('zh-hans').convert(line_data).strip())
+                        line_data = json.loads(zhconv.convert(line_data, "zh-cn").strip())
                         # print(line_data)
                     else:
                         line_data = json.loads(line_data.strip())
@@ -92,10 +90,10 @@ if __name__ == "__main__":
     parser.add_argument("-n","--need_extractor",help="need running WikiExtractor or not",
                         action="store_true")
     parser.add_argument("--input_file", type=str,
-                        default="./en_output",
+                        default="../data/en_output",
                         help="pure article data upper folder where the text file is")
     parser.add_argument("--output_file", type=str,
-                        default="./en_output_analyzed",
+                        default="../data/en_output_analyzed",
                        help="Analyzed data upper folder")
     parser.add_argument("--process_num", type=int, default=8, help="multiprocessnum")
     args = parser.parse_args()

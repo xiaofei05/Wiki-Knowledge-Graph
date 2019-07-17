@@ -1,2 +1,0 @@
-You must start janusgraph server at first. Then you can configure config_file on the basis of your cluster configuration.
-There are three arguments need to set.

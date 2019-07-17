@@ -1,0 +1,169 @@
+{
+    "propertyKeys": [
+        {
+            "name": "entity-id",
+            "dataType": "String",
+            "cardinality": "SINGLE"
+        },
+        {
+            "name": "property-id",
+            "dataType": "String",
+            "cardinality": "SINGLE"
+        },
+        {
+            "name": "relation-id",
+            "dataType": "String",
+            "cardinality": "SINGLE"
+        },
+        {
+            "name": "en-description",
+            "dataType": "String",
+            "cardinality": "SINGLE"
+        },
+        {
+            "name": "zh-description",
+            "dataType": "String",
+            "cardinality": "SINGLE"
+        },
+        {
+            "name": "en-label",
+            "dataType": "String",
+            "cardinality": "SINGLE"
+        },
+        {
+            "name": "zh-label",
+            "dataType": "String",
+            "cardinality": "SINGLE"
+        },
+        {
+            "name": "en-aliases",
+            "dataType": "String",
+            "cardinality": "LIST"
+        },
+        {
+            "name": "zh-aliases",
+            "dataType": "String",
+            "cardinality": "LIST"
+        },
+        
+        {
+            "name": "en-link",
+            "dataType": "String",
+            "cardinality": "SINGLE"
+        },
+        {
+            "name": "zh-link",
+            "dataType": "String",
+            "cardinality": "SINGLE"
+        },
+
+        {
+            "name": "type",
+            "dataType": "String",
+            "cardinality": "SINGLE"
+        },
+        {
+            "name": "rank",
+            "dataType": "String",
+            "cardinality": "SINGLE"
+        },
+
+        {
+            "name": "references",
+            "dataType": "String",
+            "cardinality": "SINGLE"
+        },
+        {
+            "name": "value",
+            "dataType": "String",
+            "cardinality": "SINGLE"
+        },
+        {
+            "name": "abouts",
+            "dataType": "String",
+            "cardinality": "SINGLE"
+        }
+    ],
+    "vertexLabels": [
+        {
+            "name": "entity"
+        },
+        {
+            "name": "feature"
+        }
+    ],
+    "edgeLabels": [
+        {
+            "name": "relation",
+            "multiplicity": "MULTI"
+        },
+        {
+            "name": "attribute",
+            "multiplicity": "MULTI"
+        }
+    ],
+
+    "vertexIndexes": [
+        {
+            "name": "vByEntityId",
+            "propertyKeys": [
+                "entity-id"
+            ],
+            "composite": true,
+            "unique": true
+        },
+        {
+            "name": "vByPropertyId",
+            "propertyKeys": [
+                "property-id"
+            ],
+            "composite": true,
+            "unique": false
+        },
+        {
+            "name": "vByEntityEnZhLabel",
+            "propertyKeys": [
+                "en-label", "zh-label"
+            ],
+            "composite": false,
+            "unique": false,
+            "mixedIndex": "search"
+        },
+        {
+            "name": "vByEntityEnZhInfo",
+            "propertyKeys": [
+                "en-label", "zh-label", "en-description", "zh-description", "en-aliases", "zh-aliases"
+            ],
+            "composite": false,
+            "unique": false,
+            "mixedIndex": "search"
+        },
+        {
+            "name": "vByFeatureValue",
+            "propertyKeys": [
+                "value"
+            ],
+            "composite": false,
+            "unique": false
+        }
+    ],
+    "edgeIndexes": [
+        {
+            "name": "eByRelationId",
+            "propertyKeys": [
+                "relation-id"
+            ],
+            "composite": true,
+            "unique": false
+        }
+    ],
+    "vertexCentricIndexes": [
+        {
+            "name": "vcByRelationId",
+            "propertyKeys": ["relation-id"],
+            "edge": "relation",
+            "direction": "BOTH",
+            "order": "incr"
+        }
+    ]
+}

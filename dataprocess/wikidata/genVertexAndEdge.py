@@ -1,7 +1,9 @@
 import json
 import os
 import argparse
-
+import sys
+import zhconv
+# sys.path.append("../../")
 
 total_count = 0
 entity_count = 0
@@ -24,7 +26,7 @@ def process_file(file_path, output_dir):
                     total_count, entity_count, property_count, relation_count, concept_count))
             total_count+=1
             
-            data = json.loads(line.strip())
+            data = json.loads(zhconv.convert(line, "zh-cn").strip())
             # id, type
             entity = {
                 "id": data["id"],
@@ -137,7 +139,6 @@ def process_file(file_path, output_dir):
                         else:
                             raise ValueError
 
-
             entity_data.append(entity)
             if entity["type"]=="property":
                 property_data.append(entity)
@@ -163,11 +164,11 @@ def process_file(file_path, output_dir):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--input", type=str,
-                        default="./output",
+                        default="../data/output",
                         help="Downloaded pure json data file")
 
     parser.add_argument("--output", type=str,
-                        default="./veoutput",
+                        default="../data/veoutput",
                        help="Analyzed data upper folder")
     args = parser.parse_args()
     

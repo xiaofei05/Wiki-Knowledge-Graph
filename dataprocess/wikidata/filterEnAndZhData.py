@@ -38,16 +38,15 @@ def process_data(input_file, output_dir, num_per_file):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--input", type=str,
-                        default="./latest-all.json",
+                        default="../data/latest-all.json",
                         help="Downloaded pure json data file")
 
     parser.add_argument("--output", type=str,
-                        default="./output",
+                        default="../data/output",
                        help="Analyzed data upper folder")
     
     parser.add_argument("--num_per_file", type=int, default=50000, help="The number of data in each output file")
     args = parser.parse_args()
-
 
     if not os.path.exists(args.output):
         os.mkdir(args.output)
