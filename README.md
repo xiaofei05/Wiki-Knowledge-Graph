@@ -11,6 +11,8 @@
 
 
 
-# References
+# references
+
 **JanusGraph**: https://github.com/JanusGraph/janusgraph
+
 **JanusGraph-utils**: https://github.com/IBM/janusgraph-utils
