@@ -35,13 +35,13 @@ public class LoadDataMain {
         LOGGER.info(String.format("Total files is %d", filePaths.size()));
         List<FutureTask<Integer>> futureTasks = new ArrayList<FutureTask<Integer>>();
 
-        if(args[2].toLowerCase()=="vertex"){
+        if(args[2].toLowerCase().equals("vertex")){
             for(String filePath:filePaths){
                 FutureTask<Integer> future = new FutureTask<Integer>(new VertexImporter(graph, filePath));
                 futureTasks.add(future);
                 executorService.submit(future);
             }
-        }else if(args[2].toLowerCase()=="edge"){
+        }else if(args[2].toLowerCase().equals("edge")){
             for(String filePath:filePaths){
                 FutureTask<Integer> future = new FutureTask<Integer>(new EdgeImporter(graph, filePath));
                 futureTasks.add(future);
