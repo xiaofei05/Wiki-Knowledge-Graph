@@ -9,26 +9,14 @@ import multiprocessing
 types = ["entity", "property", "concept", "relation"]
 
 def process_file(file_path, output_dir):
-    print("processing %s ..."%(file_path))
-
-    total_count = 0
-    entity_count = 0
-    relation_count = 0
-    concept_count = 0
-    property_count = 0
-
+    print("\nprocessing %s ..."%(file_path))
     entity_data = []
     concept_data = []
     property_data = []
     relation_data = []
-    global total_count, types, entity_count, relation_count, concept_count, property_count
     with open(file_path, "r") as f:
         for line in f:
-            if total_count%1000==0:
-                print("\n%s total: %d, ent count: %d, pro count: %d\nrelation count: %d, concept count: %d"%(
-                    file_path, total_count, entity_count, property_count, relation_count, concept_count))
-            total_count+=1
-            
+
             data = json.loads(line.strip())
             # id, type
             entity = {
@@ -151,14 +139,9 @@ def process_file(file_path, output_dir):
             entity_data.append(entity)
             if entity["type"]=="property":
                 property_data.append(entity)
-                property_count+=1
             else:
-                entity_count+=1
             relation_data += entity_edge
             concept_data += concept_edge
-            
-            relation_count+=len(entity_edge)
-            concept_count+=len(concept_edge)
 
         lists = [entity_data, property_data, concept_data, relation_data]
         paths = ["%s/%s/%s_%s"%(output_dir, i, file_path.split("/")[-1], i) for i in types]
@@ -169,6 +152,8 @@ def process_file(file_path, output_dir):
             with open(paths[i], "w") as f:
                 for one_json in lists[i]:
                     f.write(json.dumps(one_json) + "\n")
+        
+        print("\nprocessing %s ... done"%(file_path))
 
 def run_task(process_num, file_list, output_file):
     #列出file_list下的文件个数
