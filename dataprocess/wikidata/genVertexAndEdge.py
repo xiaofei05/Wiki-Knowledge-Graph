@@ -3,17 +3,20 @@ import os
 import argparse
 import sys
 import zhconv
+import multiprocessing
 # sys.path.append("../../")
 
-total_count = 0
-entity_count = 0
-relation_count = 0
-concept_count = 0
-property_count = 0
 types = ["entity", "property", "concept", "relation"]
 
 def process_file(file_path, output_dir):
     print("processing %s ..."%(file_path))
+
+    total_count = 0
+    entity_count = 0
+    relation_count = 0
+    concept_count = 0
+    property_count = 0
+
     entity_data = []
     concept_data = []
     property_data = []
@@ -21,12 +24,12 @@ def process_file(file_path, output_dir):
     global total_count, types, entity_count, relation_count, concept_count, property_count
     with open(file_path, "r") as f:
         for line in f:
-            if total_count%30000==0:
-                print("\ntotal: %d, ent count: %d, pro count: %d\nrelation count: %d, concept count: %d"%(
-                    total_count, entity_count, property_count, relation_count, concept_count))
+            if total_count%1000==0:
+                print("\n%s total: %d, ent count: %d, pro count: %d\nrelation count: %d, concept count: %d"%(
+                    file_path, total_count, entity_count, property_count, relation_count, concept_count))
             total_count+=1
             
-            data = json.loads(zhconv.convert(line, "zh-cn").strip())
+            data = json.loads(line.strip())
             # id, type
             entity = {
                 "id": data["id"],
@@ -40,19 +43,25 @@ def process_file(file_path, output_dir):
             if data.get("descriptions", -1)!=-1:
                 for language, value in data["descriptions"].items():
                     if language in ["zh", "en"]:
-                        entity[language + "-description"] = value["value"]
+                        if language == "zh":
+                            entity[language + "-description"] = zhconv.convert(value["value"], 'zh-cn')
+                        else:
+                            entity[language + "-description"] = value["value"]
             # labels
             if data.get("labels", -1)!=-1:
                 for language, value in data["labels"].items():
                     if language in ["zh", "en"]:
-                        entity[language + "-label"] = value["value"]
+                        if language == "zh":
+                            entity[language + "-label"] = zhconv.convert(value["value"], 'zh-cn')
+                        else:
+                            entity[language + "-label"] = value["value"]
             # aliases
             if data.get("aliases", -1)!=-1:
                 for language, value in data["aliases"].items():
                     if language in ["zh", "en"]:
                         entity[language + "-aliases"] = []
                         for item in data["aliases"][language]:
-                            entity[language + "-aliases"].append(item["value"])
+                            entity[language + "-aliases"].append(zhconv.convert(item["value"], 'zh-cn'))
             # sitelinks
             if data.get("sitelinks", -1)!=-1:
                 for language, value in data["sitelinks"].items():
@@ -161,6 +170,19 @@ def process_file(file_path, output_dir):
                 for one_json in lists[i]:
                     f.write(json.dumps(one_json) + "\n")
 
+def run_task(process_num, file_list, output_file):
+    #列出file_list下的文件个数
+    num=len(file_list)
+    pool = multiprocessing.Pool(processes = process_num)
+    print("The number of files is %d. "%num)
+
+    for file_path in file_list:
+        pool.apply_async(process_file, args=(file_path, output_file))
+    pool.close()
+    pool.join()
+
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--input", type=str,
@@ -170,6 +192,10 @@ if __name__ == "__main__":
     parser.add_argument("--output", type=str,
                         default="../data/veoutput",
                        help="Analyzed data upper folder")
+    
+    parser.add_argument("--process_num", type=int,
+                        default=8,
+                       help="the number of process")
     args = parser.parse_args()
     
     if not os.path.exists(args.input):
@@ -187,8 +213,10 @@ if __name__ == "__main__":
         if not os.path.exists(os.path.join(args.output, i)):
             os.makedirs(os.path.join(args.output, i))
     
-    for file_path in file_list:
-        process_file(file_path, args.output)
+
+    run_task(args.process_num, file_list, args.output)
+    # for file_path in file_list:
+    #     process_file(file_path, args.output)
 
             
 
