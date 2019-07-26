@@ -99,7 +99,7 @@
         },
         {
             "name": "attribute",
-            "multiplicity": "MULTI"
+            "multiplicity": "ONE2MANY"
         }
     ],
     "vertexIndexes": [
@@ -141,6 +141,15 @@
             "name": "vByFeatureValue",
             "propertyKeys": [
                 "value"
+            ],
+            "composite": false,
+            "unique": false,
+            "mixedIndex": "search"
+        },
+        {
+            "name": "vByAbouts",
+            "propertyKeys": [
+                "abouts"
             ],
             "composite": false,
             "unique": false,
