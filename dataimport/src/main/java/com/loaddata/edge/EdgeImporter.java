@@ -72,17 +72,17 @@ public class EdgeImporter extends Importer {
                 edge.property("relation-id", json.getString("property_id"));
 
                 if (json.has("abouts")) {
-                    JSONObject attrs = json.getJSONObject("abouts");
-                    Set<String> keys = attrs.keySet();
-                    for (String key : keys) {
-                        JSONArray values = attrs.getJSONArray(key);
-                        if(graphTransaction.getPropertyKey(key)==null){
-                            continue;
-                        }
-                        for (int j = 0; j < values.length(); j++) {
-                            edge.property(key, genValue(values.getJSONObject(j)));
-                        }
-                    }
+                    edge.property("abouts", json.getJSONObject("abouts").toString());
+//                    Set<String> keys = attrs.keySet();
+//                    for (String key : keys) {
+//                        JSONArray values = attrs.getJSONArray(key);
+//                        if(graphTransaction.getPropertyKey(key)==null){
+//                            continue;
+//                        }
+//                        for (int j = 0; j < values.length(); j++) {
+//                            edge.property(key, genValue(values.getJSONObject(j)));
+//                        }
+//                    }
                 }
                 if(json.has("references")){
                     edge.property("references", json.getJSONObject("references").toString());

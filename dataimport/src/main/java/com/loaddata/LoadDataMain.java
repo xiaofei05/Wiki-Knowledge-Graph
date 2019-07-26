@@ -34,7 +34,6 @@ public class LoadDataMain {
         }
         LOGGER.info(String.format("Total files is %d", filePaths.size()));
         List<FutureTask<Integer>> futureTasks = new ArrayList<FutureTask<Integer>>();
-
         if(args[2].toLowerCase().equals("vertex")){
             for(String filePath:filePaths){
                 FutureTask<Integer> future = new FutureTask<Integer>(new VertexImporter(graph, filePath));
@@ -48,7 +47,7 @@ public class LoadDataMain {
                 executorService.submit(future);
             }
         }
-
+        executorService.shutdown();
         int total = 0;
         for (FutureTask<Integer> futureTask : futureTasks) {
             total+= futureTask.get();
